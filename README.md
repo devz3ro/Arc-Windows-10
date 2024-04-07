@@ -1,3 +1,13 @@
+What this (arwin10.ps1) does:
+
+1. Downloads and installs required fonts.
+2. Downloads Arc.
+3. Extacts Arc, deletes files and folders related to Windows 11.
+4. Replaces minimum version required.
+5. Installs Arc.
+
+------------------------------------------------------------------
+
 Download and install the latest Windows App SDK from here: https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/downloads
 
 Enable Developer Mode (temporarily, once the app is installed you can turn it off).
