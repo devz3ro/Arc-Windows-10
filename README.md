@@ -10,3 +10,5 @@ Run PowerShell as Administrator.
 Copy, paste, and execute the following command in PowerShell and select "Yes" when it prompts: Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
 
 Change directory to where you downloaded the PowerShell script and run it (.\arcwin10.ps1).
+
+It will create a directory named "working" which can be safely deleted after the installation has been verified.
