@@ -15,10 +15,8 @@ Enable Developer Mode (temporarily, once the app is installed you can turn it of
 2. Update & Security: Navigate to Update & Security > For developers.
 3. Developer Mode: Select the "Developer Mode" radio button to enable Developer Mode. You might need to confirm and possibly wait for additional components to install.
 
-Run PowerShell as Administrator.
+Download both arcwin10.ps1 & arcwin10.bat to the same directory. Right click and run arcwin10.bat as Administrator.
 
-Copy, paste, and execute the following command in PowerShell and select "Yes" when it prompts: Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+It will create a directory named "working" which can be safely deleted after the installation has been verified. You may proceed to disable Developer Mode.
 
-Change directory to where you downloaded the PowerShell script and run it (.\arcwin10.ps1).
-
-It will create a directory named "working" which can be safely deleted after the installation has been verified.
+Note: The auto updater in Arc does not work in Windows 10. You will need to re-enable Developer Mode, delete the "working" directory (if you haven't already), and re-run arcwin10.bat as Administrator to update it.
