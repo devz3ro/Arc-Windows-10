@@ -2,7 +2,7 @@ What this (arcwin10.ps1) does:
 
 1. Downloads and installs required fonts.
 2. Downloads Arc.
-3. Extacts Arc, deletes files and folders related to Windows 11.
+3. Extracts Arc, deletes files and folders related to Windows 11.
 4. Replaces minimum version required.
 5. Installs Arc.
 
