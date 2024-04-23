@@ -17,6 +17,6 @@ Enable Developer Mode (temporarily, once the app is installed you can turn it of
 
 Download both arcwin10.ps1 & arcwin10.bat to the same directory. Right click and run arcwin10.bat as Administrator.
 
-It will create a directory named "working" which can be safely deleted after the installation has been verified. You may proceed to disable Developer Mode.
+Two directories will be created: "arctemp" (will be deleted after installation) and "Arc" (where arc will live). The "Arc" directory should only be deleted if you are upgrading. You may proceed to disable Developer Mode.
 
-Note: The auto updater in Arc does not work in Windows 10. You will need to re-enable Developer Mode, delete the "working" directory (if you haven't already), and re-run arcwin10.bat as Administrator to update it.
+Note: The auto updater in Arc does not work in Windows 10. You will need to re-enable Developer Mode, delete the "Arc" directory, and re-run arcwin10.bat as Administrator to update it.
