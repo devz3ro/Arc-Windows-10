@@ -1,87 +1,90 @@
-$fontUrl = "https://aka.ms/SegoeFluentIcons"
-$fontZipFileName = "Segoe-Fluent-Icons.zip"
-
-$appInstallerUrl = "https://releases.arc.net/windows/prod/Arc.appinstaller"
-
-$workingDirectory = Join-Path -Path $PSScriptRoot -ChildPath "working"
-
-if (-not (Test-Path -Path $workingDirectory)) {
-    New-Item -ItemType Directory -Path $workingDirectory | Out-Null
-}
-
-$fontZipPath = Join-Path -Path $workingDirectory -ChildPath $fontZipFileName
-Invoke-WebRequest -Uri $fontUrl -OutFile $fontZipPath
-Write-Host "Segoe Fluent Icons zip downloaded."
-
-$fontExtractPath = Join-Path -Path $workingDirectory -ChildPath "SegoeFluentIcons"
-Expand-Archive -Path $fontZipPath -DestinationPath $fontExtractPath
-Write-Host "Segoe Fluent Icons zip extracted."
+param (
+    [string]$FontUrl = "https://aka.ms/SegoeFluentIcons",
+    [string]$AppInstallerUrl = "https://releases.arc.net/windows/prod/Arc.appinstaller",
+    [string]$TargetWindowsVersion = '10.0.10000.1000'
+)
 
 function Add-Font {
     Param([string]$fontPath)
-    $fontsFolder = (New-Object -ComObject Shell.Application).Namespace(0x14)
-    $fontName = [System.IO.Path]::GetFileName($fontPath)
-    $fontsFolder.CopyHere($fontPath)
-    $regPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts"
     $fontNameWithoutExtension = [System.IO.Path]::GetFileNameWithoutExtension($fontPath)
-    New-ItemProperty -Path $regPath -Name "$fontNameWithoutExtension (TrueType)" -Value $fontName -PropertyType String -Force | Out-Null
+    $regPath = "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts"
+    if (!(Test-Path "Registry::$regPath\$fontNameWithoutExtension (TrueType)")) {
+        $fontsFolder = (New-Object -ComObject Shell.Application).Namespace(0x14)
+        $fontName = [System.IO.Path]::GetFileName($fontPath)
+        $fontsFolder.CopyHere($fontPath)
+        New-ItemProperty -Path $regPath -Name "$fontNameWithoutExtension (TrueType)" -Value $fontName -PropertyType String -Force | Out-Null
+        Write-Output "Font '$fontNameWithoutExtension' installed."
+    } else {
+        Write-Output "Font '$fontNameWithoutExtension' is already installed."
+    }
 }
+
+function Delete-ItemIfExists {
+    Param([string]$path, [string]$type = 'File')
+    if (Test-Path -LiteralPath $path) {
+        Remove-Item -LiteralPath $path -Recurse -Force
+        Write-Output "$type '$path' deleted successfully."
+    } else {
+        Write-Output "$type '$path' does not exist."
+    }
+}
+
+$arctempDirectory = Join-Path -Path $PSScriptRoot -ChildPath "arctemp"
+if (-not (Test-Path -Path $arctempDirectory)) {
+    New-Item -ItemType Directory -Path $arctempDirectory | Out-Null
+}
+
+$fontZipFileName = "Segoe-Fluent-Icons.zip"
+$fontZipPath = Join-Path -Path $arctempDirectory -ChildPath $fontZipFileName
+Invoke-WebRequest -Uri $FontUrl -OutFile $fontZipPath
+Write-Output "Segoe Fluent Icons zip downloaded."
+
+$fontExtractPath = Join-Path -Path $arctempDirectory -ChildPath "SegoeFluentIcons"
+Expand-Archive -Path $fontZipPath -DestinationPath $fontExtractPath
+Write-Output "Segoe Fluent Icons zip extracted."
 
 $fontFilePath = Join-Path -Path $fontExtractPath -ChildPath "Segoe Fluent Icons.ttf"
 Add-Font -fontPath $fontFilePath
-Write-Host "Segoe Fluent Icons font installed."
 
-$appInstallerPath = Join-Path -Path $workingDirectory -ChildPath "Arc.appinstaller"
-Invoke-WebRequest -Uri $appInstallerUrl -OutFile $appInstallerPath
-Write-Host "Arc.appinstaller download complete. File saved to: $appInstallerPath"
+$appInstallerPath = Join-Path -Path $arctempDirectory -ChildPath "Arc.appinstaller"
+Invoke-WebRequest -Uri $AppInstallerUrl -OutFile $appInstallerPath
+Write-Output "Arc.appinstaller download complete. File saved to: $appInstallerPath"
 
 [xml]$xmlContent = Get-Content -Path $appInstallerPath
-
 $msixUrl = $xmlContent.AppInstaller.MainPackage.Uri
 
 if ($msixUrl -ne $null) {
-    $msixPath = Join-Path -Path $workingDirectory -ChildPath ([System.IO.Path]::GetFileNameWithoutExtension($msixUrl) + ".zip")
-    
+    $msixPath = Join-Path -Path $arctempDirectory -ChildPath ([System.IO.Path]::GetFileNameWithoutExtension($msixUrl) + ".zip")
     Invoke-WebRequest -Uri $msixUrl -OutFile $msixPath
-    Write-Host "Arc.x64.msix download complete. File saved and renamed to: $msixPath"
+    Write-Output "Arc.x64.msix download complete. File saved and renamed to: $msixPath"
     
-    $extractionDirectory = Join-Path -Path $workingDirectory -ChildPath "Arc"
-    
+    $extractionDirectory = Join-Path -Path $PSScriptRoot -ChildPath "Arc"
     Expand-Archive -Path $msixPath -DestinationPath $extractionDirectory
-    Write-Host "Extraction complete. Files extracted to: $extractionDirectory"
+    Write-Output "Extraction complete. Files extracted to: $extractionDirectory"
 
     $filesToDelete = @("[Content_Types].xml", "AppxBlockMap.xml", "AppxSignature.p7x")
-    $folderToDelete = "AppxMetadata"
-
     foreach ($file in $filesToDelete) {
         $filePath = Join-Path -Path $extractionDirectory -ChildPath $file
-        if (Test-Path -LiteralPath $filePath) {
-            Remove-Item -LiteralPath $filePath
-            Write-Host "$file deleted successfully."
-        } else {
-            Write-Host "$file does not exist."
-        }
+        Delete-ItemIfExists -path $filePath
     }
 
+    $folderToDelete = "AppxMetadata"
     $folderPath = Join-Path -Path $extractionDirectory -ChildPath $folderToDelete
-    if (Test-Path -Path $folderPath) {
-        Remove-Item -Path $folderPath -Recurse
-        Write-Host "$folderToDelete folder deleted successfully."
-    } else {
-        Write-Host "$folderToDelete folder does not exist."
-    }
+    Delete-ItemIfExists -path $folderPath -type 'Folder'
 
     $appxManifestPath = Join-Path -Path $extractionDirectory -ChildPath "AppxManifest.xml"
     if (Test-Path -Path $appxManifestPath) {
-        (Get-Content -Path $appxManifestPath) -replace '10.0.22000.0', '10.0.10000.1000' | Set-Content -Path $appxManifestPath
-        Write-Host "AppxManifest.xml updated successfully."
+        (Get-Content -Path $appxManifestPath) -replace '10.0.22000.0', $TargetWindowsVersion | Set-Content -Path $appxManifestPath
+        Add-AppxPackage -Register $appxManifestPath
+        Write-Output "App package registered successfully."
     } else {
-        Write-Host "AppxManifest.xml does not exist."
+        Write-Output "AppxManifest.xml not found."
     }
-
-    Add-AppxPackage -Register $appxManifestPath
-    Write-Host "App package registered successfully."
-
 } else {
-    Write-Host "No Arc.x64.msix URL found in the Arc.appinstaller file."
+    Write-Output "MSIX URL could not be retrieved from the appinstaller file."
 }
+
+Remove-Item -Path $arctempDirectory -Recurse -Force
+
+Write-Output "Cleanup complete. Temporary files removed."
+Write-Output "Script execution completed."
