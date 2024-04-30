@@ -1,4 +1,4 @@
-What this (arcwin10.ps1) does:
+What this does:
 
 1. Downloads and installs required fonts.
 2. Downloads Arc.
