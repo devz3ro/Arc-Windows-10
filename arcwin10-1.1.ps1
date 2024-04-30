@@ -19,7 +19,7 @@ function Set-UBR {
 
     $originalUBR = (Get-ItemProperty -Path $path).UBR
     $originalType = (Get-ItemProperty -Path $path).UBR.GetType().Name
-    $originalUBRHex = "{0:x}" -f $originalUBR  # Convert decimal to hex
+    $originalUBRHex = "{0:x}" -f $originalUBR
     Log "Setting UBR to new value. Original UBR: $originalUBR (Decimal), $originalUBRHex (Hex), Type: $originalType"
 
     $decimalValue = [convert]::ToInt32($newUBR, 16)
