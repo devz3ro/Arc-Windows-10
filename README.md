@@ -1,10 +1,10 @@
 What this does:
 
-Downloads and installs required fonts.
-Downloads Arc.
-Changes registry to allow Arc to be installed on Windows 10.
-Installs Arc.
-Deletes all temp files, restores original registry settings.
+1. Downloads and installs required fonts.
+2. Downloads Arc.
+3. Changes registry to allow Arc to be installed on Windows 10.
+4. Installs Arc.
+5. Deletes all temp files, restores original registry settings.
 
 ------------------------------------------------------------------
 
