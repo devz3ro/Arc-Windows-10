@@ -7,7 +7,7 @@ What this does:
 5. Deletes all temp files, restores original registry settings.
 6. Log file saved with timestamp of execution.
 
-   1.1 to 1.2 changes. Added checks for what's installed on the system already to speed up execution by skipping redundant downloading. Added Arc dependency installation.
+   1.1 to 1.2 changes: Added checks for what's installed on the system already to speed up execution by skipping redundant downloading. Added Arc dependency installation.
 
 ------------------------------------------------------------------
 
