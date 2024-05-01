@@ -20,8 +20,7 @@ Download both arcwin10-1.2.ps1 & arcwin10-1.2.bat to the same directory. Right c
 
 Have spare change? If this has helped you in anyway and you are feeling generous, my eth address is below for donations (eth or erc-20 tokens of any kind is appreciated). Thanks in advance:
 
-[![donate](
-https://brianmacdonald.github.io/Ethonate/svg/eth-donate-blue.svg)](
-https://brianmacdonald.github.io/Ethonate/address#0xc8A10b4Bc41815fD29C701fD5252faf94802B994)
+0xc8A10b4Bc41815fD29C701fD5252faf94802B994
 
-![eth](https://github.com/devz3ro/Arc-Windows-10/assets/6265569/5be79f23-7d67-4ad4-9669-8a69dd75d41c)
+![image](https://github.com/devz3ro/Arc-Windows-10/assets/6265569/6c8b79e7-bc50-419c-a529-9fdea1b79cec)
+
