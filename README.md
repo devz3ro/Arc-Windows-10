@@ -11,7 +11,7 @@ What this does:
 
 ------------------------------------------------------------------
 
-Install Instructions:
+Installation Instructions:
 
 Download and install the latest Windows App SDK from here: https://learn.microsoft.com/en-us/windows/apps/windows-app-sdk/downloads
 
