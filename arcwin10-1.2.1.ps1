@@ -58,6 +58,21 @@ function Set-UBR {
     return $originalUBRHex, $originalType
 }
 
+function Install-Fonts {
+    $fontUrl = "https://aka.ms/SegoeFluentIcons"
+    $fontZipFileName = "Segoe-Fluent-Icons.zip"
+    $fontZipPath = Join-Path -Path $arctempDirectory -ChildPath $fontZipFileName
+    Invoke-WebRequest -Uri $fontUrl -OutFile $fontZipPath
+    Log "Segoe Fluent Icons zip downloaded."
+    
+    $fontExtractPath = Join-Path -Path $arctempDirectory -ChildPath "SegoeFluentIcons"
+    Expand-Archive -Path $fontZipPath -DestinationPath $fontExtractPath -Force
+    Log "Segoe Fluent Icons zip extracted."
+    
+    $fontFilePath = Join-Path -Path $fontExtractPath -ChildPath "Segoe Fluent Icons.ttf"
+    Add-Font -fontPath $fontFilePath
+}
+
 function Add-Font {
     param (
         [string]$fontPath
@@ -101,43 +116,9 @@ if (Check-Installed-Version -PackageName $mainPackage.Name -PackageVersion $main
         }
     }
 
-    if (-not $dependenciesInstalled) {
-        $fontUrl = "https://aka.ms/SegoeFluentIcons"
-        $fontZipFileName = "Segoe-Fluent-Icons.zip"
-        $fontZipPath = Join-Path -Path $arctempDirectory -ChildPath $fontZipFileName
-        Invoke-WebRequest -Uri $fontUrl -OutFile $fontZipPath
-        Log "Segoe Fluent Icons zip downloaded."
-
-        $fontExtractPath = Join-Path -Path $arctempDirectory -ChildPath "SegoeFluentIcons"
-        Expand-Archive -Path $fontZipPath -DestinationPath $fontExtractPath -Force
-        Log "Segoe Fluent Icons zip extracted."
-
-        $fontFilePath = Join-Path -Path $fontExtractPath -ChildPath "Segoe Fluent Icons.ttf"
-        Add-Font -fontPath $fontFilePath
-        Log "Segoe Fluent Icons.ttf installed."
-
-        foreach ($dependency in $dependencies) {
-            $dependencyUri = $dependency.Uri
-            $dependencyFileName = [System.IO.Path]::GetFileName($dependencyUri)
-            $localDependencyPath = "$arctempDirectory\$dependencyFileName"
-            Invoke-WebRequest -Uri $dependencyUri -OutFile $localDependencyPath
-            Add-AppxPackageSafe -PackagePath $localDependencyPath -PackageName $dependency.Name
-        }
+    if ($dependenciesInstalled) {
+        Install-Fonts
     }
-
-    $fontUrl = "https://aka.ms/SegoeFluentIcons"
-    $fontZipFileName = "Segoe-Fluent-Icons.zip"
-    $fontZipPath = Join-Path -Path $arctempDirectory -ChildPath $fontZipFileName
-    Invoke-WebRequest -Uri $fontUrl -OutFile $fontZipPath
-    Log "Segoe Fluent Icons zip downloaded."
-    
-    $fontExtractPath = Join-Path -Path $arctempDirectory -ChildPath "SegoeFluentIcons"
-    Expand-Archive -Path $fontZipPath -DestinationPath $fontExtractPath -Force
-    Log "Segoe Fluent Icons zip extracted."
-    
-    $fontFilePath = Join-Path -Path $fontExtractPath -ChildPath "Segoe Fluent Icons.ttf"
-    Add-Font -fontPath $fontFilePath
-    Log "Segoe Fluent Icons.ttf installed."
 
     $originalUBRHex, $originalType = Set-UBR -newUBR "ffffffff" -type 'DWord'
     Invoke-WebRequest -Uri $mainPackage.Uri -OutFile $localMainPackagePath
