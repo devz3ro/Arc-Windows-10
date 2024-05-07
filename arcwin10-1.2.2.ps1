@@ -16,16 +16,14 @@ function Check-and-Update-AppxPackage {
         $newVersion = [version]$PackageVersion
         if ($installedVersion -lt $newVersion) {
             Log "Updating $PackageName from version $installedVersion to $newVersion."
-            Add-AppxPackageSafe -PackagePath $PackageUri -PackageName $PackageName
-            return $true
+            return Add-AppxPackageSafe -PackagePath $PackageUri -PackageName $PackageName
         } else {
             Log "$PackageName is already up to date with version $installedVersion."
-            return $true
+            return $false
         }
     } else {
         Log "$PackageName is not installed. Installing version $PackageVersion."
-        Add-AppxPackageSafe -PackagePath $PackageUri -PackageName $PackageName
-        return $true
+        return Add-AppxPackageSafe -PackagePath $PackageUri -PackageName $PackageName
     }
 }
 
@@ -104,6 +102,18 @@ $mainPackage = $xml.AppInstaller.MainPackage
 $mainPackageUri = $mainPackage.Uri
 $mainPackageFileName = [System.IO.Path]::GetFileName($mainPackageUri)
 $localMainPackagePath = "$arctempDirectory\$mainPackageFileName"
+Invoke-WebRequest -Uri $mainPackageUri -OutFile $localMainPackagePath
+
+$mainPackageUpdated = Check-and-Update-AppxPackage -PackageName $mainPackage.Name -PackageVersion $mainPackage.Version -PackageUri $localMainPackagePath
+
+if (-not $mainPackageUpdated) {
+    Log "Main package is already up to date."
+    Remove-Item -Path $arctempDirectory -Recurse -Force
+    Log "Cleanup completed. All temporary files removed."
+    exit
+}
+
+$originalUBRHex, $originalType = Set-UBR -newUBR "ffffffff" -type 'DWord'
 
 $dependenciesInstalled = $true
 $dependencies = $xml.AppInstaller.Dependencies.Package
@@ -120,10 +130,6 @@ foreach ($dependency in $dependencies) {
 if ($dependenciesInstalled) {
     Install-Fonts
 }
-
-$originalUBRHex, $originalType = Set-UBR -newUBR "ffffffff" -type 'DWord'
-
-Check-and-Update-AppxPackage -PackageName $mainPackage.Name -PackageVersion $mainPackage.Version -PackageUri $localMainPackagePath
 
 Set-UBR -newUBR $originalUBRHex -type 'DWord'
 Log "UBR restored to original value: $originalUBRHex, Type: $originalType"
