@@ -1,30 +1,29 @@
 function Log {
-    param ([string]$message)
+    param (
+        [string]$message
+    )
     Write-Host $message
     Add-Content -Path $logFile -Value $message
 }
 
-function Check-and-Update-AppxPackage {
+function Check-Installed-Version {
     param (
         [string]$PackageName,
-        [string]$PackageVersion,
-        [string]$PackageUri
+        [string]$PackageVersion
     )
-    $existingPackage = Get-AppxPackage -Name $PackageName
-    if ($existingPackage) {
-        $installedVersion = [version]$existingPackage.Version
-        $newVersion = [version]$PackageVersion
-        if ($installedVersion -lt $newVersion) {
-            Log "Updating $PackageName from version $installedVersion to $newVersion."
-            return Add-AppxPackageSafe -PackagePath $PackageUri -PackageName $PackageName
-        } else {
-            Log "$PackageName is already up to date with version $installedVersion."
-            return $false
+    $existingPackages = Get-AppxPackage -Name $PackageName
+    $highestVersionInstalled = $existingPackages | Sort-Object -Property Version -Descending | Select-Object -First 1
+
+    if ($highestVersionInstalled) {
+        $installedVersion = [Version]$highestVersionInstalled.Version
+        $packageVersion = [Version]$PackageVersion
+
+        if ($installedVersion -ge $packageVersion) {
+            Log "Package $PackageName v$PackageVersion is already installed with version v$installedVersion."
+            return $true
         }
-    } else {
-        Log "$PackageName is not installed. Installing version $PackageVersion."
-        return Add-AppxPackageSafe -PackagePath $PackageUri -PackageName $PackageName
     }
+    return $false
 }
 
 function Add-AppxPackageSafe {
@@ -33,13 +32,12 @@ function Add-AppxPackageSafe {
         [string]$PackageName
     )
     try {
-        Add-AppxPackage -Path $PackagePath -ForceApplicationShutdown
+        Add-AppxPackage -Path $PackagePath
         Log "Package installed: $PackageName"
     } catch {
         Log "Failed to install package: $($_.Exception.Message)"
-        return $false
+        throw
     }
-    return $true
 }
 
 function Set-UBR {
@@ -76,7 +74,9 @@ function Install-Fonts {
 }
 
 function Add-Font {
-    param ([string]$fontPath)
+    param (
+        [string]$fontPath
+    )
     $fontsFolder = (New-Object -ComObject Shell.Application).Namespace(0x14)
     $fontName = [System.IO.Path]::GetFileName($fontPath)
     $fontsFolder.CopyHere($fontPath)
@@ -102,37 +102,30 @@ $mainPackage = $xml.AppInstaller.MainPackage
 $mainPackageUri = $mainPackage.Uri
 $mainPackageFileName = [System.IO.Path]::GetFileName($mainPackageUri)
 $localMainPackagePath = "$arctempDirectory\$mainPackageFileName"
-Invoke-WebRequest -Uri $mainPackageUri -OutFile $localMainPackagePath
 
-$mainPackageUpdated = Check-and-Update-AppxPackage -PackageName $mainPackage.Name -PackageVersion $mainPackage.Version -PackageUri $localMainPackagePath
+if (Check-Installed-Version -PackageName $mainPackage.Name -PackageVersion $mainPackage.Version) {
+    Log "Skipping further installations."
+} else {
+    $dependenciesInstalled = $true
+    $dependencies = $xml.AppInstaller.Dependencies.Package
 
-if (-not $mainPackageUpdated) {
-    Log "Main package is already up to date."
-    Remove-Item -Path $arctempDirectory -Recurse -Force
-    Log "Cleanup completed. All temporary files removed."
-    exit
-}
-
-$originalUBRHex, $originalType = Set-UBR -newUBR "ffffffff" -type 'DWord'
-
-$dependenciesInstalled = $true
-$dependencies = $xml.AppInstaller.Dependencies.Package
-foreach ($dependency in $dependencies) {
-    $depUri = $dependency.Uri
-    $depFileName = [System.IO.Path]::GetFileName($depUri)
-    $localDepPath = "$arctempDirectory\$depFileName"
-    Invoke-WebRequest -Uri $depUri -OutFile $localDepPath
-    if (-not (Check-and-Update-AppxPackage -PackageName $dependency.Name -PackageVersion $dependency.Version -PackageUri $localDepPath)) {
-        $dependenciesInstalled = $false
+    foreach ($dependency in $dependencies) {
+        if (-not (Check-Installed-Version -PackageName $dependency.Name -PackageVersion $dependency.Version)) {
+            $dependenciesInstalled = $false
+            break
+        }
     }
-}
 
-if ($dependenciesInstalled) {
-    Install-Fonts
-}
+    if ($dependenciesInstalled) {
+        Install-Fonts
+    }
 
-Set-UBR -newUBR $originalUBRHex -type 'DWord'
-Log "UBR restored to original value: $originalUBRHex, Type: $originalType"
+    $originalUBRHex, $originalType = Set-UBR -newUBR "ffffffff" -type 'DWord'
+    Invoke-WebRequest -Uri $mainPackage.Uri -OutFile $localMainPackagePath
+    Add-AppxPackageSafe -PackagePath $localMainPackagePath -PackageName $mainPackage.Name
+    Set-UBR -newUBR $originalUBRHex -type 'DWord'
+    Log "UBR restored to original value: $originalUBRHex, Type: $originalType"
+}
 
 Remove-Item -Path $arctempDirectory -Recurse -Force
 Log "Cleanup completed. All temporary files removed."
