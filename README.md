@@ -3,7 +3,7 @@ What this does:
 1. Downloads and installs required fonts & Arc dependencies.
 2. Downloads Arc.
 3. Changes registry to allow Arc to be installed on Windows 10.
-4. Installs Arc.
+4. Installs / upgrades Arc.
 5. Deletes all temp files, restores original registry settings.
 6. Log file saved with timestamp of execution.
 
