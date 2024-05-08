@@ -62,7 +62,7 @@ function Install-Fonts {
     $fontUrl = "https://aka.ms/SegoeFluentIcons"
     $fontZipFileName = "Segoe-Fluent-Icons.zip"
     $fontZipPath = Join-Path -Path $arctempDirectory -ChildPath $fontZipFileName
-    Invoke-WebRequest -Uri $fontUrl -OutFile $fontZipPath
+    $webClient.DownloadFile($fontUrl, $fontZipPath)
     Log "Segoe Fluent Icons zip downloaded."
     
     $fontExtractPath = Join-Path -Path $arctempDirectory -ChildPath "SegoeFluentIcons"
@@ -92,9 +92,11 @@ if (-not (Test-Path -Path $arctempDirectory)) {
     New-Item -ItemType Directory -Path $arctempDirectory | Out-Null
 }
 
+$webClient = New-Object System.Net.WebClient
+
 $installerUrl = "https://releases.arc.net/windows/prod/Arc.appinstaller"
 $localAppInstaller = "$arctempDirectory\Arc.appinstaller"
-Invoke-WebRequest -Uri $installerUrl -OutFile $localAppInstaller
+$webClient.DownloadFile($installerUrl, $localAppInstaller)
 Log "Arc.appinstaller downloaded."
 
 [xml]$xml = Get-Content -Path $localAppInstaller
@@ -121,11 +123,13 @@ if (Check-Installed-Version -PackageName $mainPackage.Name -PackageVersion $main
     }
 
     $originalUBRHex, $originalType = Set-UBR -newUBR "ffffffff" -type 'DWord'
-    Invoke-WebRequest -Uri $mainPackage.Uri -OutFile $localMainPackagePath
+    $webClient.DownloadFile($mainPackage.Uri, $localMainPackagePath)
     Add-AppxPackageSafe -PackagePath $localMainPackagePath -PackageName $mainPackage.Name
     Set-UBR -newUBR $originalUBRHex -type 'DWord'
     Log "UBR restored to original value: $originalUBRHex, Type: $originalType"
 }
+
+$webClient.Dispose()
 
 Remove-Item -Path $arctempDirectory -Recurse -Force
 Log "Cleanup completed. All temporary files removed."
