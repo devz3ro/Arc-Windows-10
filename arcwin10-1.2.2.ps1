@@ -169,7 +169,7 @@ if (Check-Installed-Version -PackageName $mainPackage.Name -PackageVersion $main
         Log "No XML version found for $packageName"
     }
 }
-	Install-Fonts
+    Install-Fonts
     $originalUBRHex, $originalType = Set-UBR -newUBR "ffffffff" -type 'DWord'
     $webClient.DownloadFile($mainPackage.Uri, $localMainPackagePath)
     Add-AppxPackageSafe -PackagePath $localMainPackagePath -PackageName $mainPackage.Name
