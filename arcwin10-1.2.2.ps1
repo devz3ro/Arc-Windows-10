@@ -86,6 +86,41 @@ function Add-Font {
     Log "$fontName installed."
 }
 
+function Get-LatestInstalledVersion($packageName, $architecture) {
+    $packages = Get-AppxPackage -Name $packageName -ErrorAction SilentlyContinue | 
+                Where-Object { $_.Architecture -eq $architecture }
+    if ($packages) {
+        $latestVersion = $packages | Sort-Object {[System.Version] $_.Version} -Descending | 
+                         Select-Object -First 1 -ExpandProperty Version
+        return $latestVersion
+    } else {
+        return $null
+    }
+}
+
+function Get-DependencyXmlPackageInfo($packageName) {
+    $package = $xml.AppInstaller.Dependencies.Package | Where-Object { $_.Name -eq $packageName }
+    if ($package) {
+        return @{Version = $package.Version; Uri = $package.Uri}
+    } else {
+        return $null
+    }
+}
+
+function DownloadAndInstallDependency($uri, $packageName) {
+    $webClient = New-Object System.Net.WebClient
+    $localPath = "$arctempDirectory\$packageName.appx"
+    Write-Output "Downloading $packageName from $uri..."
+    $webClient.DownloadFile($uri, $localPath)
+    Write-Output "Installing $packageName..."
+    Add-AppxPackage -Path $localPath
+}
+
+$dependenciesToCheck = @(
+    @{Name="Microsoft.WindowsAppRuntime.1.5"; Architecture="x64"},
+    @{Name="Microsoft.VCLibs.140.00.UWPDesktop"; Architecture="x64"}
+)
+
 $logFile = Join-Path -Path $PSScriptRoot -ChildPath ("Arc.appinstaller(" + (Get-Date -Format "MM-dd-yyyy-hhmmtt") + ").log")
 $arctempDirectory = Join-Path -Path $PSScriptRoot -ChildPath "arctemp"
 if (-not (Test-Path -Path $arctempDirectory)) {
@@ -108,20 +143,33 @@ $localMainPackagePath = "$arctempDirectory\$mainPackageFileName"
 if (Check-Installed-Version -PackageName $mainPackage.Name -PackageVersion $mainPackage.Version) {
     Log "Skipping further installations."
 } else {
-    $dependenciesInstalled = $true
-    $dependencies = $xml.AppInstaller.Dependencies.Package
+    foreach ($packageInfo in $dependenciesToCheck) {
+    $packageName = $packageInfo.Name
+    $architecture = $packageInfo.Architecture
+    $installedVersion = Get-LatestInstalledVersion -packageName $packageName -architecture $architecture
+    $packageDetails = Get-DependencyXmlPackageInfo -packageName $packageName
 
-    foreach ($dependency in $dependencies) {
-        if (-not (Check-Installed-Version -PackageName $dependency.Name -PackageVersion $dependency.Version)) {
-            $dependenciesInstalled = $false
-            break
+    if ($packageDetails) {
+        $xmlVersion = $packageDetails.Version
+        $uri = $packageDetails.Uri
+        if ($installedVersion) {
+            if ([System.Version]$installedVersion -eq [System.Version]$xmlVersion) {
+                Log "$packageName is up to date. Installed version: $installedVersion. Required version from XML: $xmlVersion"
+            } elseif ([System.Version]$installedVersion -lt [System.Version]$xmlVersion) {
+                Log "$packageName is outdated. Installed version: $installedVersion. Required version from XML: $xmlVersion"
+                DownloadAndInstallDependency -uri $uri -packageName $packageName
+            } else {
+                Log "$packageName has a higher version installed than required. Installed version: $installedVersion. Required version from XML: $xmlVersion"
+            }
+        } else {
+            Log "$packageName is not installed or not found. Required version from XML: $xmlVersion"
+            DownloadAndInstallDependency -uri $uri -packageName $packageName
         }
+    } else {
+        Log "No XML version found for $packageName"
     }
-
-    if ($dependenciesInstalled) {
-        Install-Fonts
-    }
-
+}
+	Install-Fonts
     $originalUBRHex, $originalType = Set-UBR -newUBR "ffffffff" -type 'DWord'
     $webClient.DownloadFile($mainPackage.Uri, $localMainPackagePath)
     Add-AppxPackageSafe -PackagePath $localMainPackagePath -PackageName $mainPackage.Name
