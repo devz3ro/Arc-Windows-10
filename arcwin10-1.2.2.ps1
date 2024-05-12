@@ -107,8 +107,12 @@ function Get-DependencyXmlPackageInfo($packageName) {
     }
 }
 
-function DownloadAndInstallDependency($uri, $packageName) {
-    $webClient = New-Object System.Net.WebClient
+function DownloadAndInstallDependency {
+    param (
+        [string]$uri,
+        [string]$packageName,
+        [System.Net.WebClient]$webClient
+    )
     $localPath = "$arctempDirectory\$packageName.appx"
     Write-Output "Downloading $packageName from $uri..."
     $webClient.DownloadFile($uri, $localPath)
@@ -144,31 +148,31 @@ if (Check-Installed-Version -PackageName $mainPackage.Name -PackageVersion $main
     Log "Skipping further installations."
 } else {
     foreach ($packageInfo in $dependenciesToCheck) {
-    $packageName = $packageInfo.Name
-    $architecture = $packageInfo.Architecture
-    $installedVersion = Get-LatestInstalledVersion -packageName $packageName -architecture $architecture
-    $packageDetails = Get-DependencyXmlPackageInfo -packageName $packageName
+        $packageName = $packageInfo.Name
+        $architecture = $packageInfo.Architecture
+        $installedVersion = Get-LatestInstalledVersion -packageName $packageName -architecture $architecture
+        $packageDetails = Get-DependencyXmlPackageInfo -packageName $packageName
 
-    if ($packageDetails) {
-        $xmlVersion = $packageDetails.Version
-        $uri = $packageDetails.Uri
-        if ($installedVersion) {
-            if ([System.Version]$installedVersion -eq [System.Version]$xmlVersion) {
-                Log "$packageName is up to date. Installed version: $installedVersion. Required version from XML: $xmlVersion"
-            } elseif ([System.Version]$installedVersion -lt [System.Version]$xmlVersion) {
-                Log "$packageName is outdated. Installed version: $installedVersion. Required version from XML: $xmlVersion"
-                DownloadAndInstallDependency -uri $uri -packageName $packageName
+        if ($packageDetails) {
+            $xmlVersion = $packageDetails.Version
+            $uri = $packageDetails.Uri
+            if ($installedVersion) {
+                if ([System.Version]$installedVersion -eq [System.Version]$xmlVersion) {
+                    Log "$packageName is up to date. Installed version: $installedVersion. Required version from XML: $xmlVersion"
+                } elseif ([System.Version]$installedVersion -lt [System.Version]$xmlVersion) {
+                    Log "$packageName is outdated. Installed version: $installedVersion. Required version from XML: $xmlVersion"
+                    DownloadAndInstallDependency -uri $uri -packageName $packageName -webClient $webClient
+                } else {
+                    Log "$packageName has a higher version installed than required. Installed version: $installedVersion. Required version from XML: $xmlVersion"
+                }
             } else {
-                Log "$packageName has a higher version installed than required. Installed version: $installedVersion. Required version from XML: $xmlVersion"
+                Log "$packageName is not installed or not found. Required version from XML: $xmlVersion"
+                DownloadAndInstallDependency -uri $uri -packageName $packageName -webClient $webClient
             }
         } else {
-            Log "$packageName is not installed or not found. Required version from XML: $xmlVersion"
-            DownloadAndInstallDependency -uri $uri -packageName $packageName
+            Log "No XML version found for $packageName"
         }
-    } else {
-        Log "No XML version found for $packageName"
     }
-}
     Install-Fonts
     $originalUBRHex, $originalType = Set-UBR -newUBR "ffffffff" -type 'DWord'
     $webClient.DownloadFile($mainPackage.Uri, $localMainPackagePath)
