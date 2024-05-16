@@ -59,17 +59,33 @@ function Set-UBR {
 }
 
 function Install-Fonts {
+    $fontName = "Segoe Fluent Icons.ttf"
+    $regPath = "HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts"
+    
+    $fontRegistryName = "$($fontName -replace '\.ttf$', ' (TrueType)')"
+    $installedFont = Get-ItemProperty -Path $regPath -Name $fontRegistryName -ErrorAction SilentlyContinue
+
+    if ($installedFont) {
+        Log "$fontName is already installed. Skipping installation."
+        return
+    } else {
+        Log "$fontName is not installed. Proceeding with download and installation."
+    }
+
     $fontUrl = "https://aka.ms/SegoeFluentIcons"
     $fontZipFileName = "Segoe-Fluent-Icons.zip"
     $fontZipPath = Join-Path -Path $arctempDirectory -ChildPath $fontZipFileName
     $webClient.DownloadFile($fontUrl, $fontZipPath)
     Log "Segoe Fluent Icons zip downloaded."
-    
+
     $fontExtractPath = Join-Path -Path $arctempDirectory -ChildPath "SegoeFluentIcons"
+    if (Test-Path $fontExtractPath) {
+        Remove-Item -Recurse -Force $fontExtractPath
+    }
     Expand-Archive -Path $fontZipPath -DestinationPath $fontExtractPath -Force
     Log "Segoe Fluent Icons zip extracted."
-    
-    $fontFilePath = Join-Path -Path $fontExtractPath -ChildPath "Segoe Fluent Icons.ttf"
+
+    $fontFilePath = Join-Path -Path $fontExtractPath -ChildPath $fontName
     Add-Font -fontPath $fontFilePath
 }
 
