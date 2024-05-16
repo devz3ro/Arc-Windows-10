@@ -7,13 +7,13 @@ What this does:
 5. Deletes all temp files, restores original registry settings.
 6. Log file saved with timestamp of execution.
 
-   1.2.2 to 1.2.3 changes: Duplicate variable cleanup.
+   1.2.3 to 1.2.4 changes: Added existing font check.
 
 ------------------------------------------------------------------
 
 Installation Instructions:
 
-Download both arcwin10-1.2.3.ps1 & arcwin10-1.2.3.bat to the same directory. Right click and run arcwin10-1.2.3.bat as Administrator.
+Download both arcwin10-1.2.4.ps1 & arcwin10-1.2.4.bat to the same directory. Right click and run arcwin10-1.2.4.bat as Administrator.
 
 ------------------------------------------------------------------
 
