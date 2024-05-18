@@ -15,7 +15,7 @@ Installation Instructions:
 
 Download both arcwin10-1.2.4.ps1 & arcwin10-1.2.4.bat to the same directory. Right click and run arcwin10-1.2.4.bat as Administrator.
 
-Note: The auto updater in Arc does not work in Windows 10. You will need to run (from a command prompt) "taskkill /f /t /im arc.exe", and re-run arcwin10-1.2.4.bat as Administrator to update it.
+Note: The auto updater in Arc does not work in Windows 10. You will need to run (from a command prompt) "taskkill /f /t /im arc.exe", and re-run arcwin10-1.2.4.bat as Administrator to update it. In the next release I plan on adding logic to detect if arc.exe is running and close it automatically to perform the update.
 
 ------------------------------------------------------------------
 
