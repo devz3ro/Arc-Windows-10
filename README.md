@@ -17,6 +17,8 @@ Download both arcwin10-1.2.4.ps1 & arcwin10-1.2.4.bat to the same directory. Rig
 
 Note: The auto updater in Arc does not work in Windows 10. You will need to run (from a command prompt) "taskkill /f /t /im arc.exe", and re-run arcwin10-1.2.4.bat as Administrator to update it. In the next release I plan on adding logic to detect if arc.exe is running and close it automatically to perform the update.
 
+[![How to install Arc Browser on Windows 10](https://img.youtube.com/vi/46B4v7bhkYI/0.jpg)](https://www.youtube.com/watch?v=46B4v7bhkYI "How to install Arc Browser on Windows 10")
+
 ------------------------------------------------------------------
 
 Have spare change? If this has helped you in anyway and you are feeling generous, my eth address is below for donations (eth, erc-20 + side chain tokens of any kind is appreciated). Thanks in advance:
