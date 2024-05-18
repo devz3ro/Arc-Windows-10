@@ -19,7 +19,7 @@ Note: The auto updater in Arc does not work in Windows 10. You will need to run 
 
 ------------------------------------------------------------------
 
-YouTuber Quantum_Cipher was kind enough to make an installation video
+YouTuber Quantum_Cipher was kind enough to make an installation video:
 
 [![How to install Arc Browser on Windows 10](https://img.youtube.com/vi/46B4v7bhkYI/0.jpg)](https://www.youtube.com/watch?v=46B4v7bhkYI "How to install Arc Browser on Windows 10")
 
