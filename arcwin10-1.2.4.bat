@@ -1,4 +1,12 @@
 @ECHO OFF
+NET SESSION >NUL 2>&1
+IF %ERRORLEVEL% NEQ 0 (
+    ECHO Requesting administrative privileges...
+    PowerShell -Command "Start-Process '%~f0' -Verb RunAs"
+    EXIT /B
+)
+
 PowerShell -NoProfile -ExecutionPolicy Bypass -Command "& '%~dp0arcwin10-1.2.4.ps1'"
-echo Press Enter to exit ...
-set /p =
+
+ECHO Press Enter to exit ...
+SET /P =
