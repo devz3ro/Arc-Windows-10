@@ -2,7 +2,7 @@ This repository is now deprecated and will not be receiving any further updates.
 
 The files in this repository are retained for historical reference only.
 
-For the latest version, please visit: [ArcInstaller.exe](https://releases.arc.net/windows/ArcInstaller.exe)
+For the latest version, please visit: [https://releases.arc.net/windows/ArcInstaller.exe](https://releases.arc.net/windows/ArcInstaller.exe)
 
 ------------------------------------------------------------------
 
