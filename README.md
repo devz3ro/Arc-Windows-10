@@ -1,3 +1,11 @@
+This repository is now deprecated. The Arc team has released a new version that is fully compatible with Windows 10, eliminating the need for any workarounds.
+
+The files in this repository are retained for historical reference only.
+
+For the latest version, please visit: [ArcInstaller.exe](https://releases.arc.net/windows/ArcInstaller.exe)
+
+------------------------------------------------------------------
+
 What this does:
 
 1. Downloads and installs required fonts & Arc dependencies.
