@@ -1,4 +1,4 @@
-This repository is now deprecated. The Arc team has released a new version that is fully compatible with Windows 10, eliminating the need for any workarounds.
+This repository is now deprecated and will not be receiving any further updates. The Arc team has released a new version that is fully compatible with Windows 10, eliminating the need for any workarounds.
 
 The files in this repository are retained for historical reference only.
 
