@@ -1,5 +1,3 @@
-------------------------------------------------------------------
-
 What this does:
 
 1. Downloads and installs required fonts & Arc dependencies.
