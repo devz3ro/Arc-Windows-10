@@ -7,15 +7,15 @@ What this does:
 5. Deletes all temp files, restores original registry settings.
 6. Log file saved with timestamp of execution.
 
-   1.2.3 to 1.2.4 changes: Added existing font check.
+   1.2.4 to 1.2.4.1 changes: Added Administrator check to .bat file, PowerShell untouched.
 
 ------------------------------------------------------------------
 
 Installation Instructions:
 
-Download both arcwin10-1.2.4.ps1 & arcwin10-1.2.4.bat to the same directory. Right click and run arcwin10-1.2.4.bat as Administrator.
+Download both arcwin10-1.2.4.1.ps1 & arcwin10-1.2.4.1.bat to the same directory. Right click and run arcwin10-1.2.4.1.bat as Administrator.
 
-Note: The auto updater in Arc does not work in Windows 10. You will need to run (from a command prompt) "taskkill /f /t /im arc.exe", and re-run arcwin10-1.2.4.bat as Administrator to update it.
+Note: The auto updater in Arc does not work in Windows 10. You will need to run (from a command prompt) "taskkill /f /t /im arc.exe", and re-run arcwin10-1.2.4.1.bat as Administrator to update it.
 
 ------------------------------------------------------------------
 
