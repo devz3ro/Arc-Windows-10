@@ -1,3 +1,5 @@
+Link to ArcInstaller v1.0.0.0 that works natively on Windows 10: https://gofile.io/d/sPkcwC
+
 What this does:
 
 1. Downloads and installs required fonts & Arc dependencies.
