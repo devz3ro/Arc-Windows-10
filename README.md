@@ -1,12 +1,8 @@
 Link to ArcInstaller v1.0.0.0 that works natively on Windows 10: [ArcInstaller.exe](https://www.dropbox.com/scl/fi/lbygfmmepd33gnrton88b/ArcInstaller.exe?rlkey=7me1zu9esyirgtx55bj1pypd7&st=bb55o1sl&dl=1)
 
-MD5 hash of v1.0.0.0 ArcInstaller.exe:
+MD5 hash of v1.0.0.0 ArcInstaller.exe: 19d292132925e6ddd808e273fd0fea85
 
-19d292132925e6ddd808e273fd0fea85
-
-Validate the MD5 (from a command prompt, CD to the same directory as the ArcInstaller.exe) - run the following command:
-
-certutil -hashfile ArcInstaller.exe MD5
+Validate the MD5 (from a command prompt, CD to the same directory as the ArcInstaller.exe) - run the following command: certutil -hashfile ArcInstaller.exe MD5
 
 ------------------------------------------------------------------
 
