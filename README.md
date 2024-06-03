@@ -1,3 +1,9 @@
+Looking for the ArcInstaller.exe that you can just double click to install? The Arc team patched that method, but I've written a step down script here:
+
+https://github.com/devz3ro/Arc-Windows-10-Native
+
+------------------------------------------------------------------
+
 What this does:
 
 1. Downloads and installs required fonts & Arc dependencies.
