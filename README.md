@@ -1,3 +1,9 @@
+Have issues, concerns, or suggestions?
+
+Join the discord discussion @ https://discord.gg/VUVkcMEFd4
+
+------------------------------------------------------------------
+
 Looking for the ArcInstaller.exe that you can just double click to install? The Arc team patched that method, but I've written a step down script here:
 
 https://github.com/devz3ro/Arc-Windows-10-Native
